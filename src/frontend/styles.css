@@ -1,7 +1,7 @@
 /* Général */
 body {
   font-family: 'Arial', sans-serif;
-  background: linear-gradient(135deg, #f0f4fd, #cce5ff);
+  background: linear-gradient(135deg, #67a562, #af2f25);
   margin: 0;
   padding: 0;
   display: flex;
@@ -13,7 +13,7 @@ body {
 
 /* Conteneur principal */
 .app-container {
-  background: #fff;
+  background: #36c729;
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
