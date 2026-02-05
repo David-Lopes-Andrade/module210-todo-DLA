@@ -3,7 +3,7 @@ const apiEndpoint = "https://fi21-david-andrade.redmushroom-4916f911.northeurope
 
 $(document).ready(function () {
   // Charger les tâches au démarrage
-  loadTasks();
+  loadTasks(); 
 
   // Ajouter une nouvelle tâche
   $("#todo-form").on("submit", async function (e) {
