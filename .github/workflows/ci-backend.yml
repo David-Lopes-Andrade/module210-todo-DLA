@@ -5,11 +5,11 @@ on:
     branches:
       - main
     paths:
-      - "backend/**"
+      - "src/backend/**"
 
 env:
   REG_NAME: "acrfi21210"           # Nom du registry (sans .azurecr.io)
-  IMAGE_NAME: "todo-backend-dla"   # Nom de ton image
+  IMAGE_NAME: "backend-app"   # Nom de ton image
 
 jobs:
   build-and-deploy:
@@ -24,7 +24,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ${{ env.REG_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}-dla ./backend
+          docker build -t ${{ env.REG_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}-dla src/backend
 
       - name: Push Docker image to registry
         run: |
