@@ -34,7 +34,7 @@ jobs:
         uses: treosh/lighthouse-ci-action@v12
         with:
           urls: |
-            http://localhost:3000
+            https://siteweb.davidlopesandrad.emf-informatique.ch/
           uploadArtifacts: true
           temporaryPublicStorage: true
 
@@ -81,3 +81,4 @@ jobs:
         uses: Azure/static-web-apps-deploy@v1
         with:
           action: "close"
+
