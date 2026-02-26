@@ -28,4 +28,4 @@ jobs:
 
       - name: Push Docker image to registry
         run: |
-          docker push ${{ env.REG_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}-dla
+          docker push ${{ env.REG_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}
