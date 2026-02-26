@@ -20,17 +20,26 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-        with:
-          submodules: true
-          lfs: false
+
+      # --- SERVIR LE SITE POUR LIGHTHOUSE ---
+      - name: Install static server
+        run: npm install -g serve
+
+      - name: Start static server
+        run: |
+          serve ./src/frontend -l 3000 &
+          sleep 5
 
       - name: Run Lighthouse
         uses: treosh/lighthouse-ci-action@v12
         with:
           urls: |
             http://localhost:3000
+          uploadArtifacts: true
+          temporaryPublicStorage: true
 
-      - name: Install OIDC Client from Core Package
+      # --- TOKEN AZURE ---
+      - name: Install OIDC Client
         run: npm install @actions/core@1.6.0 @actions/http-client
 
       - name: Get Id Token
@@ -42,6 +51,7 @@ jobs:
             return await core.getIDToken()
           result-encoding: string
 
+      # --- VERIFICATION ---
       - name: Vérifier index.html
         run: |
           if [ -f "./src/frontend/index.html" ]; then
@@ -51,13 +61,13 @@ jobs:
             exit 1
           fi
 
+      # --- DEPLOIEMENT ---
       - name: Build And Deploy
-        id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_RED_GRASS_09BCC8503 }}
           action: "upload"
-          app_location: "./src"
+          app_location: "./src/frontend"
           api_location: ""
           output_location: "."
           github_id_token: ${{ steps.idtoken.outputs.result }}
@@ -66,7 +76,6 @@ jobs:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
     name: Close Pull Request Job
-
     steps:
       - name: Close Pull Request
         uses: Azure/static-web-apps-deploy@v1
