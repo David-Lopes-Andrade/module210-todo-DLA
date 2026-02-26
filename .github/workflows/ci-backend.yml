@@ -5,39 +5,27 @@ on:
     branches:
       - main
     paths:
-      - "backend/**"  # Ne déclenche le workflow que si le dossier backend change
+      - "backend/**"
 
 env:
-  REG_NAME: "acrfi21210.azurecr.io"      # Remplace par le nom réel de ton registry Azure
-  IMAGE_NAME: "todo-backend-dla:latest"      # Nom de ton image Docker
+  REG_NAME: "acrfi21210"           # Nom du registry (sans .azurecr.io)
+  IMAGE_NAME: "todo-backend-dla"   # Nom de ton image
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      # -------------------------
-      # Checkout du repo
-      # -------------------------
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # -------------------------
-      # Login à la registry Docker (ACR)
-      # -------------------------
       - name: Login to Azure Container Registry
         run: |
-          echo ${{ secrets.AZURE_REGISTRY_PASSWORD }} | docker login ${{ env.REG_NAME }}.azurecr.io -u ${{ secrets.AZURE_REGISTRY_USER }}-dla --password-stdin
+          echo ${{ secrets.AZURE_REGISTRY_PASSWORD }} | docker login ${{ env.REG_NAME }}.azurecr.io -u ${{ secrets.AZURE_REGISTRY_USER }} --password-stdin
 
-      # -------------------------
-      # Build Docker image
-      # -------------------------
       - name: Build Docker image
         run: |
-          docker build -t ${{ env.REG_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }} ./backend
+          docker build -t ${{ env.REG_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}-dla ./backend
 
-      # -------------------------
-      # Push Docker image
-      # -------------------------
       - name: Push Docker image to registry
         run: |
-          docker push ${{ env.REG_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          docker push ${{ env.REG_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}-dla
