@@ -33,22 +33,26 @@ jobs:
       # -------------------------
       - name: Build Docker image
         run: |
-          TAG=${{ github.sha }}-dla
-          docker build -t ${{ env.REG_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:$TAG src/backend
+          IMAGE_TAG=${{ github.sha }}-dla
+          FULL_IMAGE_NAME=${{ env.REG_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:$IMAGE_TAG
+          echo "Building Docker image $FULL_IMAGE_NAME"
+          docker build -t $FULL_IMAGE_NAME src/backend
 
       # -------------------------
       # Push Docker image avec SHA
       # -------------------------
-      - name: Push Docker image with SHA
+      - name: Push Docker image
         run: |
-          TAG=${{ github.sha }}-dla
-          docker push ${{ env.REG_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:$TAG
+          IMAGE_TAG=${{ github.sha }}-dla
+          FULL_IMAGE_NAME=${{ env.REG_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:$IMAGE_TAG
+          echo "Pushing Docker image $FULL_IMAGE_NAME"
+          docker push $FULL_IMAGE_NAME
 
       # -------------------------
-      # Push Docker image latest
+      # Afficher l’image pushée
       # -------------------------
-      - name: Push Docker image latest
+      - name: Print pushed image
         run: |
-          TAG=${{ github.sha }}-dla
-          docker tag ${{ env.REG_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:$TAG ${{ env.REG_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:latest
-          docker push ${{ env.REG_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:latest
+          IMAGE_TAG=${{ github.sha }}-dla
+          FULL_IMAGE_NAME=${{ env.REG_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:$IMAGE_TAG
+          echo "✅ Docker image successfully pushed: $FULL_IMAGE_NAME"
