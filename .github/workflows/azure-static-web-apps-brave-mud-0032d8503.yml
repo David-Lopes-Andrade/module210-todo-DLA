@@ -55,21 +55,17 @@ jobs:
             --output-path=./lighthouse-report.html
 
       # -------------------------
-      # Upload Lighthouse report
+      # Exécuter Lighthouse sur le build avec treosh/lighthouse-ci-action
       # -------------------------
-      - name: Upload Lighthouse Report
-        uses: actions/upload-artifact@v4
+      - name: Exécuter Lighthouse sur le build
+        uses: treosh/lighthouse-ci-action@v10
+        continue-on-error: true
         with:
-          name: lighthouse-report
-          path: lighthouse-report.html
-
-      # -------------------------
-      # Print Lighthouse report link
-      # -------------------------
-      - name: Print Lighthouse Report Link
-        run: |
-          URL="${{ github.server_url }}/${GITHUB_REPOSITORY}/suites/${{ github.run_id }}/artifacts"
-          echo "✅ Lighthouse report available here: $URL"
+          urls: |
+            https://siteweb.davidlopesandrad.emf-informatique.ch/
+          temporaryPublicStorage: true
+          uploadArtifacts: false
+          configPath: ./lighthouserc.json
 
       # -------------------------
       # Déploiement Azure Static Web Apps
