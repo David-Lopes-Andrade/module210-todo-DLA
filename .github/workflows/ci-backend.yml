@@ -1,0 +1,31 @@
+name: Build and save my Docker image to a registry
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "backend/**"
+
+env:
+  REG_NAME: "acrfi21210"           # Nom du registry (sans .azurecr.io)
+  IMAGE_NAME: "todo-backend-dla"   # Nom de ton image
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Login to Azure Container Registry
+        run: |
+          echo ${{ secrets.AZURE_REGISTRY_PASSWORD }} | docker login ${{ env.REG_NAME }}.azurecr.io -u ${{ secrets.AZURE_REGISTRY_USER }} --password-stdin
+
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ env.REG_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}-dla ./backend
+
+      - name: Push Docker image to registry
+        run: |
+          docker push ${{ env.REG_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}-dla
