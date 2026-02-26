@@ -1,31 +1,54 @@
-name: Build and save my Docker image to a registry
+name: Build and push Docker image for backend
 
 on:
   push:
     branches:
       - main
     paths:
-      - "src/backend/**"
+      - "src/backend/**"   # Ne déclenche le workflow que si ce dossier change
 
 env:
-  REG_NAME: "acrfi21210"           # Nom du registry (sans .azurecr.io)
-  IMAGE_NAME: "backend-dla"   # Nom de ton image
+  REG_NAME: "acrfi21210"      # Nom de ton Azure Container Registry (sans .azurecr.io)
+  IMAGE_NAME: "backend-dla"   # Nom de ton image Docker
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
+      # -------------------------
+      # Checkout du repo
+      # -------------------------
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # -------------------------
+      # Login à la registry Azure
+      # -------------------------
       - name: Login to Azure Container Registry
         run: |
           echo ${{ secrets.AZURE_REGISTRY_PASSWORD }} | docker login ${{ env.REG_NAME }}.azurecr.io -u ${{ secrets.AZURE_REGISTRY_USER }} --password-stdin
 
+      # -------------------------
+      # Build Docker image avec SHA
+      # -------------------------
       - name: Build Docker image
         run: |
-          docker build -t ${{ env.REG_NAME }}.azurecr.io/${{ env.IMAGE_NAME }} src/backend
+          TAG=${{ github.sha }}-dla
+          docker build -t ${{ env.REG_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:$TAG src/backend
 
-      - name: Push Docker image to registry
+      # -------------------------
+      # Push Docker image avec SHA
+      # -------------------------
+      - name: Push Docker image with SHA
         run: |
-          docker push ${{ env.REG_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}
+          TAG=${{ github.sha }}-dla
+          docker push ${{ env.REG_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:$TAG
+
+      # -------------------------
+      # Push Docker image latest
+      # -------------------------
+      - name: Push Docker image latest
+        run: |
+          TAG=${{ github.sha }}-dla
+          docker tag ${{ env.REG_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:$TAG ${{ env.REG_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:latest
+          docker push ${{ env.REG_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:latest
